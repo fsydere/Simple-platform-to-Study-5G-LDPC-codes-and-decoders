@@ -1,13 +1,14 @@
 clear;
 
+% Input Parameters
 K = 8448;
 code_rate = 2/3;
-puncturing = true;
+puncturing = true; % true or false
 
 [ldpc_param] = nr15_fec_ldpc_param_init(K,code_rate);
 [BG_Row,BG_Col] = size(ldpc_param.H_BG);
 
-% Foldernames
+% Folder Names
 AList_file_name = ['Alist Files/', 'BG',num2str(ldpc_param.BG_sel),'_','iLS',num2str(ldpc_param.iLS),'_',num2str(ldpc_param.E),'_',num2str(ldpc_param.K),'.alist'];
 QC_file_name = ['QC Files/', 'BG',num2str(ldpc_param.BG_sel),'_','iLS',num2str(ldpc_param.iLS),'_',num2str(ldpc_param.E),'_',num2str(ldpc_param.K),'.qc'];
 
