@@ -34,6 +34,7 @@ if B>3840
 else
 	A = B - 16;
 end
+
 if (A<=292 || (A<=3824 && code_rate<=0.67) || code_rate<=0.25)
     base_graph_mode = 2;
     ldpc_param.K_cb = 3840;
