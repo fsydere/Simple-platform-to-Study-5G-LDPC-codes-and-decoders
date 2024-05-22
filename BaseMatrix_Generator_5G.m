@@ -1,22 +1,25 @@
 clear;
 
 % Input Parameters
-K = 8448;
-code_rate = 2/3;
+K = 3840;
+N = 6528;
+code_rate = K/N;
 puncturing = true; % true or false
+puncturing_special = false;
+puncturing_size_special = 10;
 
 [ldpc_param] = nr15_fec_ldpc_param_init(K,code_rate);
 [BG_Row,BG_Col] = size(ldpc_param.H_BG);
 
 % Folder Names
-AList_file_name = ['Alist Files/', 'BG',num2str(ldpc_param.BG_sel),'_','iLS',num2str(ldpc_param.iLS),'_',num2str(ldpc_param.E),'_',num2str(ldpc_param.K),'.alist'];
-QC_file_name = ['QC Files/', 'BG',num2str(ldpc_param.BG_sel),'_','iLS',num2str(ldpc_param.iLS),'_',num2str(ldpc_param.E),'_',num2str(ldpc_param.K),'.qc'];
+AList_file_name = ['Alist Files/', 'BG',num2str(ldpc_param.BG_sel),'_','iLS',num2str(ldpc_param.iLS),'_',num2str(N),'_',num2str(K),'.alist'];
+QC_file_name = ['QC Files/', 'BG',num2str(ldpc_param.BG_sel),'_','iLS',num2str(ldpc_param.iLS),'_',num2str(N),'_',num2str(K),'.qc'];
 
 %%  Alist Format Generator
 fileID = fopen(AList_file_name, "w+");
 
 % VN CN
-fprintf(fileID, "%s\n",(num2str(BG_Col) + " " + num2str(BG_Row)));
+fprintf(fileID, "%s\n",(num2str(BG_Col*ldpc_param.Z_c) + " " + num2str(BG_Row*ldpc_param.Z_c)));
 
 % dmax_VN dmax_CN
 fprintf(fileID, "%s\n",(num2str(max(ldpc_param.H_col(:,1))) + " " + num2str(max(ldpc_param.H_row(:,1)))));
@@ -70,10 +73,11 @@ clear size;
 fclose(fileID);
 %% QC File Generation
 
-if(puncturing)
-    puncturing_size = round(K/(ldpc_param.Z_c*code_rate));
+puncturing_size = round(K/(ldpc_param.Z_c*code_rate));
+
+if(puncturing && ~puncturing_special)
     if(puncturing_size*ldpc_param.Z_c ~= K/code_rate)
-        error("puncturing size is invalid change the code rate and TRY again. Remark: puncturing_size*ldpc_param.Z_c == K*code_rate");
+        error("Puncturing size is invalid change the code rate and TRY again. Remark: puncturing_size*ldpc_param.Z_c == K*code_rate");
     end
 end
 
@@ -89,9 +93,27 @@ for row=1:BG_Row
         end
     end
 end
-if(puncturing)
+
+if(puncturing && ~puncturing_special)
     for col=1:BG_Col
         if(col <= puncturing_size)
+            if(col == BG_Col)
+                fprintf(fileID_QC, "%s",num2str(1));
+            else
+                fprintf(fileID_QC, "%s ",num2str(1));
+            end
+            
+        else
+            if(col == BG_Col)
+                fprintf(fileID_QC, "%s",num2str(0));
+            else
+                fprintf(fileID_QC, "%s ",num2str(0));
+            end
+        end
+    end
+elseif(puncturing && puncturing_special)
+    for col=1:BG_Col
+        if(col <= puncturing_size_special)
             if(col == BG_Col)
                 fprintf(fileID_QC, "%s",num2str(1));
             else
