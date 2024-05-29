@@ -16,18 +16,11 @@ puncturing_size_special = 10;
 AList_file_name = ['Alist Files/', 'BG',num2str(ldpc_param.BG_sel),'_','iLS',num2str(ldpc_param.iLS),'_','Z_c',num2str(ldpc_param.Z_c),'_','K',num2str(K),'_','N',num2str(N),'.alist'];
 QC_file_name = ['QC Files/', 'BG',num2str(ldpc_param.BG_sel),'_','iLS',num2str(ldpc_param.iLS),'_','Z_c',num2str(ldpc_param.Z_c),'_','K',num2str(K),'_','N',num2str(N),'.qc'];
 
-% Re-arranging H_col
+
 check = ldpc_param.H_col <= M;
 ldpc_param.H_col = ldpc_param.H_col .* check;
-[row,col] = size(ldpc_param.H_col);
-for r = 1:row
-    counter = 0;
-    for c = 2:col
-        if(ldpc_param.H_col(r,c) > 0)
-            counter = counter +1;
-        end
-    end
-    ldpc_param.H_col(r,1) = counter;
+for size = 1:M
+    
 end
 
 %%  Alist Format Generator
